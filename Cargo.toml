@@ -1,0 +1,10 @@
+[package]
+name = "dearsum"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = { version = "0.27.0", features = [ "events", "windows" ] }
+
+slotmap = "1.0.7"
+ahash = "0.8.11"
