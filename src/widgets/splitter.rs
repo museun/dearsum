@@ -4,39 +4,10 @@ use crate::{
     geom::{math::inverse_lerp, size, Axis, Constraints, Pos2, Rect, Size},
     input::{Event, Handled, Interest},
     paint::{shape::Filled, Cell},
-    ui,
-    widget::Response,
-    NoResponse, Widget, WidgetExt as _,
+    ui, Widget, WidgetExt,
 };
 
-use super::{column, row, state};
-
-// TODO this type is kind of unneeded
-#[derive(Default, Debug)]
-struct PaneWidget {
-    props: Rect,
-}
-
-impl Widget for PaneWidget {
-    type Response = NoResponse;
-    type Props<'a> = Rect;
-
-    fn update(&mut self, props: Self::Props<'_>) -> Self::Response {
-        self.props = props;
-    }
-
-    fn layout(&self, mut ctx: LayoutCtx, input: Constraints) -> Size {
-        let constraints = Constraints::tight(self.props.size().into());
-        for &child in ctx.children {
-            ctx.compute(child, constraints);
-        }
-        input.constrain_min(self.props.size().into())
-    }
-}
-
-fn pane<R>(rect: Rect, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
-    PaneWidget::show_children(rect, show)
-}
+use super::{column, constrained, row, state};
 
 #[derive(Debug, Default)]
 struct SplitterWidget {
@@ -92,9 +63,10 @@ pub fn split<L, R>(
     axis: Axis,
     primary: impl FnOnce() -> L,
     secondary: impl FnOnce() -> R,
-) -> Response {
+) -> (L, R) {
     let ui = ui();
     let split = state(|| 0.5);
+
     let rect = ui.available_rect();
 
     let (main, cross) = match axis {
@@ -103,10 +75,9 @@ pub fn split<L, R>(
     };
 
     let show = || {
-        // this is just a constrained widget
-        pane(main, primary);
+        let left = constrained(Constraints::tight(main.size().into()), primary);
 
-        if let Some(pos) = *ui.widget::<SplitterWidget>((axis, rect)) {
+        if let Some(pos) = *SplitterWidget::show((axis, rect)) {
             let (x, y, t) = match axis {
                 Axis::Horizontal => (rect.left(), rect.right(), pos.x),
                 Axis::Vertical => (rect.top(), rect.bottom(), pos.y),
@@ -114,26 +85,29 @@ pub fn split<L, R>(
             split.set(inverse_lerp(x as f32, y as f32, t as f32).unwrap_or(0.5));
         }
 
-        // this is just a constrained widget
-        pane(cross, secondary);
+        // TODO this needs to know the previous size so we can keep the splitter from going past it
+        let right = constrained(Constraints::tight(cross.size().into()), secondary);
+
+        (left.into_output(), right.into_output())
     };
 
     match axis {
         Axis::Horizontal => row(show),
         Axis::Vertical => column(show),
     }
+    .into_output()
 }
 
 pub fn split_vertical<L, R>(
-    primary: impl FnOnce() -> L,
+    primary: impl FnOnce() -> L, //
     secondary: impl FnOnce() -> R,
-) -> Response {
+) -> (L, R) {
     split(Axis::Vertical, primary, secondary)
 }
 
 pub fn split_horizontal<L, R>(
     primary: impl FnOnce() -> L,
     secondary: impl FnOnce() -> R,
-) -> Response {
+) -> (L, R) {
     split(Axis::Horizontal, primary, secondary)
 }
