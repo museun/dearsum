@@ -3,11 +3,8 @@ use std::ops::RangeInclusive;
 use crate::{
     color::Rgba,
     context::{LayoutCtx, PaintCtx},
-    geom::{math::remap, size, Constraints, Size},
-    paint::{
-        shape::{Filled, Line},
-        Cell,
-    },
+    geom::{math::remap, size, vec2, Constraints, Rect, Size},
+    paint::{shape::Filled, Cell},
     widget::Response,
     NoResponse, Widget, WidgetExt as _,
 };
@@ -76,7 +73,11 @@ impl Widget for ProgressWidget {
 
         let (min, max) = (rect.left(), rect.right() + 1);
         let x = remap(self.props.pos, (self.props.min, self.props.max), (min, max)) - min;
-        ctx.draw(Line::horizontal(x).custom_cell(|_| Cell::new(' ').bg(self.props.filled)));
+
+        ctx.draw_cropped(
+            Rect::from_min_size(ctx.rect.min, vec2(x, 1)),
+            Filled::new(Cell::new(' ').bg(self.props.filled)),
+        );
     }
 }
 
