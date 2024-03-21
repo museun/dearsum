@@ -10,12 +10,12 @@ pub trait WidgetExt: Widget + Sized {
     fn show_children<R>(
         props: Self::Props<'_>,
         show: impl FnOnce() -> R,
-    ) -> Response<Self::Response> {
+    ) -> Response<Self::Response, R> {
         let ui = ui();
         let resp = ui.begin_widget::<Self>(props);
-        let _inner = show();
+        let output = show();
         ui.end_widget(resp.id());
-        resp
+        resp.map(output)
     }
 }
 

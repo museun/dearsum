@@ -41,16 +41,17 @@ impl Widget for KeyAreaWidget {
     }
 }
 
-pub fn key_area<R>(show: impl FnOnce() -> R) -> Response<KeyAreaResponse> {
+pub fn key_area<R>(show: impl FnOnce() -> R) -> Response<KeyAreaResponse, R> {
     KeyAreaWidget::show_children((), show)
 }
 
-pub fn hot_key<R>(keybind: impl Into<Keybind>, show: impl FnOnce() -> R) -> bool {
+pub fn hot_key<R>(keybind: impl Into<Keybind>, show: impl FnOnce() -> R) -> Response<bool, R> {
     let resp = key_area(show);
     let keybind = keybind.into();
-    match (resp.key, resp.modifiers) {
+    let pressed = match (resp.key, resp.modifiers) {
         (Some(key), None) => keybind == Keybind::new(key, Modifiers::NONE),
         (Some(key), Some(modifiers)) => keybind == Keybind::new(key, modifiers),
         _ => false,
-    }
+    };
+    Response::new(resp.id(), pressed, resp.into_output())
 }

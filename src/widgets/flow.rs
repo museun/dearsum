@@ -26,6 +26,6 @@ impl Widget for FlowWidget {
     }
 }
 
-pub fn flow<R>(flow: Flow, show: impl FnOnce() -> R) -> Response {
+pub fn flow<R>(flow: Flow, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     FlowWidget::show_children(flow, show)
 }

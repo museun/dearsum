@@ -33,10 +33,10 @@ impl Widget for AlignWidget {
     }
 }
 
-pub fn align<R>(align: Align2, show: impl FnOnce() -> R) -> Response {
+pub fn align<R>(align: Align2, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     AlignWidget::show_children(align, show)
 }
 
-pub fn center<R>(show: impl FnOnce() -> R) -> Response {
+pub fn center<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     self::align(Align2::CENTER_CENTER, show)
 }

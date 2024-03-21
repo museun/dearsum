@@ -20,7 +20,7 @@ impl Widget for FloatWidget {
     }
 }
 
-pub fn float<R>(show: impl FnOnce() -> R) -> Response {
+pub fn float<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     FloatWidget::show_children((), show)
 }
 
@@ -39,6 +39,6 @@ impl Widget for ClipWidget {
     }
 }
 
-pub fn clip<R>(show: impl FnOnce() -> R) -> Response {
+pub fn clip<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     ClipWidget::show_children((), show)
 }

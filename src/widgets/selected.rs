@@ -25,19 +25,21 @@ impl Radio {
         self
     }
 
-    pub fn show<R, V: PartialEq>(self, value: &mut V, selected: V, show: impl FnOnce() -> R) {
+    pub fn show<R, V: PartialEq>(self, value: &mut V, selected: V, show: impl FnOnce() -> R) -> R {
         let resp = on_click(|| {
             let bg = if *value == selected {
                 self.active_fill
             } else {
                 self.inactive_fill.unwrap_or(self.active_fill.darken(0.3))
             };
-            filled(bg, show)
+            filled(bg, show).into_output()
         });
 
         if resp.clicked {
             *value = selected
         }
+
+        resp.into_output()
     }
 }
 
@@ -50,7 +52,7 @@ impl Default for Radio {
     }
 }
 
-pub fn radio<R, V: PartialEq>(value: &mut V, selected: V, show: impl FnOnce() -> R) {
+pub fn radio<R, V: PartialEq>(value: &mut V, selected: V, show: impl FnOnce() -> R) -> R {
     Radio::default().show(value, selected, show)
 }
 
@@ -61,15 +63,19 @@ pub struct Checkbox {
 }
 
 impl Checkbox {
-    pub fn show<R>(self, value: &mut bool, show: impl FnOnce() -> R) {
+    pub fn show<R>(self, value: &mut bool, show: impl FnOnce() -> R) -> R {
         let resp = on_click(|| {
-            List::row().spacing(1).show(|| {
-                let button = if *value { '☒' } else { '☐' };
-                label(button);
-                show();
-            })
+            List::row()
+                .spacing(1)
+                .show(|| {
+                    let button = if *value { '☒' } else { '☐' };
+                    label(button);
+                    show()
+                })
+                .into_output()
         });
-        *value ^= resp.clicked
+        *value ^= resp.clicked;
+        resp.into_output()
     }
 }
 
@@ -82,7 +88,7 @@ impl Default for Checkbox {
     }
 }
 
-pub fn checkbox<R>(value: &mut bool, show: impl FnOnce() -> R) {
+pub fn checkbox<R>(value: &mut bool, show: impl FnOnce() -> R) -> R {
     Checkbox::default().show(value, show)
 }
 

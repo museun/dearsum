@@ -273,7 +273,7 @@ impl Inner {
         };
 
         self.nodes.borrow_mut()[id].widget = widget;
-        Response::new(id, resp)
+        Response::new(id, resp, ())
     }
 
     pub fn end_widget(&self, id: WidgetId) {

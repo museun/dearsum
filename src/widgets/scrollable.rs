@@ -33,7 +33,7 @@ impl Scrollable {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
         ScrollableWidget::show_children(self, show)
     }
 }
@@ -148,6 +148,6 @@ impl Widget for ScrollableWidget {
     }
 }
 
-pub fn scrollable<R>(show: impl FnOnce() -> R) -> Response {
+pub fn scrollable<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     Scrollable::new().show(show)
 }

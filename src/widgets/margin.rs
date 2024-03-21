@@ -35,6 +35,6 @@ impl Widget for MarginWidget {
     }
 }
 
-pub fn margin<R>(margin: Margin, show: impl FnOnce() -> R) -> Response {
+pub fn margin<R>(margin: Margin, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     MarginWidget::show_children(margin, show)
 }

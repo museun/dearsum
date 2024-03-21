@@ -114,10 +114,10 @@ impl Widget for MouseAreaWidget {
 pub fn mouse_area<R>(
     filter: MouseEventFilter,
     show: impl FnOnce() -> R,
-) -> Response<MouseAreaResponse> {
+) -> Response<MouseAreaResponse, R> {
     MouseAreaWidget::show_children(filter, show)
 }
 
-pub fn on_click<R>(show: impl FnOnce() -> R) -> Response<MouseAreaResponse> {
+pub fn on_click<R>(show: impl FnOnce() -> R) -> Response<MouseAreaResponse, R> {
     mouse_area(MouseEventFilter::empty().click(), show)
 }

@@ -34,7 +34,7 @@ impl Widget for PaneWidget {
     }
 }
 
-fn pane<R>(rect: Rect, show: impl FnOnce() -> R) -> Response {
+fn pane<R>(rect: Rect, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     PaneWidget::show_children(rect, show)
 }
 

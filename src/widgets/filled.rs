@@ -39,7 +39,7 @@ pub fn render_cell(cell: impl Into<Cell>) -> Response {
     FilledWidget::show((Filled::new(cell.into()), Size::ZERO))
 }
 
-pub fn filled<R>(bg: impl Into<Rgba>, show: impl FnOnce() -> R) -> Response {
+pub fn filled<R>(bg: impl Into<Rgba>, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     FilledWidget::show_children((Filled::bg(bg), Size::ZERO), show)
 }
 

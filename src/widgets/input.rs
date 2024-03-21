@@ -220,12 +220,6 @@ impl Widget for InputWidget {
         // else wrap (this'll involve a re-layout or something) (do we actually add wrapping to the text)
         // (or do we have an adjacency lists of indices we have to keep up to date?)
 
-        // TODO modifiers
-
-        // if event.modifiers().is_some() {
-        //     return Handled::Bubble;
-        // }
-
         match key.key {
             Key::Char(ch) if !ch.is_control() => self.props.insert(ch),
 

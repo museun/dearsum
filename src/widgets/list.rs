@@ -91,7 +91,7 @@ impl List {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
         ListWidget::show_children(self, show)
     }
 }
@@ -279,10 +279,10 @@ fn spacing(alignment: MainAxisAlignment, children: usize, main_size: f32, total_
     size
 }
 
-pub fn row<R>(show: impl FnOnce() -> R) -> Response {
+pub fn row<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     List::row().show(show)
 }
 
-pub fn column<R>(show: impl FnOnce() -> R) -> Response {
+pub fn column<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     List::column().show(show)
 }

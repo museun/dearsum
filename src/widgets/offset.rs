@@ -29,6 +29,6 @@ impl Widget for OffsetWidget {
     }
 }
 
-pub fn offset<R>(pos: Pos2, show: impl FnOnce() -> R) -> Response {
+pub fn offset<R>(pos: Pos2, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     OffsetWidget::show_children(pos, show)
 }

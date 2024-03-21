@@ -26,7 +26,7 @@ impl Widget for FlexWidget {
     }
 }
 
-pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> Response {
+pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     let props = Flex {
         factor,
         flex: FlexFit::Loose,
@@ -34,7 +34,7 @@ pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> Response {
     FlexWidget::show_children(props, show)
 }
 
-pub fn expanded<R>(show: impl FnOnce() -> R) -> Response {
+pub fn expanded<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     let props = Flex {
         flex: FlexFit::Tight,
         factor: 1,

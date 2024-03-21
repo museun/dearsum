@@ -42,7 +42,10 @@ impl Widget for ConstrainedWidget {
     }
 }
 
-pub fn constrained<R>(constraints: Constraints, show: impl FnOnce() -> R) -> Response {
+pub fn constrained<R>(
+    constraints: Constraints,
+    show: impl FnOnce() -> R,
+) -> Response<NoResponse, R> {
     ConstrainedWidget::show_children(constraints, show)
 }
 
@@ -70,7 +73,7 @@ impl Unconstrained {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
         UnconstainedWidget::show_children(self, show)
     }
 }
@@ -113,6 +116,6 @@ impl Widget for UnconstainedWidget {
     }
 }
 
-pub fn unconstrained<R>(show: impl FnOnce() -> R) -> Response {
+pub fn unconstrained<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     Unconstrained::new().show(show)
 }

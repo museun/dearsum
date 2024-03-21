@@ -47,7 +47,7 @@ impl Sized {
         Self::max(size(max_width, f32::INFINITY))
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
         SizedWidget::show_children(self, show)
     }
 }
@@ -85,10 +85,10 @@ impl Widget for SizedWidget {
     }
 }
 
-pub fn min_size<R>(min_size: Size, show: impl FnOnce() -> R) -> Response {
+pub fn min_size<R>(min_size: Size, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     Sized::min(min_size).show(show)
 }
 
-pub fn max_size<R>(max_size: Size, show: impl FnOnce() -> R) -> Response {
+pub fn max_size<R>(max_size: Size, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
     Sized::max(max_size).show(show)
 }

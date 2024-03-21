@@ -24,7 +24,7 @@ impl<T: Label + 'static> Default for Border<T> {
 }
 
 impl<T: Label> Border<T> {
-    pub fn show<R>(self, children: impl FnOnce() -> R) -> Response {
+    pub fn show<R>(self, children: impl FnOnce() -> R) -> Response<NoResponse, R> {
         <BorderWidget<T>>::show_children(self, children)
     }
 }
