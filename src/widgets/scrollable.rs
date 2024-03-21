@@ -101,7 +101,7 @@ impl Widget for ScrollableWidget {
     fn paint(&self, mut ctx: PaintCtx) {
         if self.pos < 0 && self.show_scrollbar {
             let area = ctx.rect;
-            let rect = Rect::from_min_size(area.right_top(), vec2(1, area.height()));
+            let _rect = Rect::from_min_size(area.right_top(), vec2(1, area.height()));
 
             ctx.draw(Filled::new(Cell::new('│').fg(0x111111)));
 

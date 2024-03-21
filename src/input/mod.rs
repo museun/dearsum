@@ -200,8 +200,6 @@ impl Input {
                 };
                 ctx!().mouse_scroll(event)
             }
-
-            _ => Handled::Bubble,
         }
     }
 

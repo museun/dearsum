@@ -29,6 +29,7 @@ impl Repaint {
         }
     }
 
+    #[allow(dead_code)]
     pub fn has_requested_repaint(&self) -> bool {
         0 < self.outstanding || self.delay < Duration::MAX
     }
@@ -37,6 +38,7 @@ impl Repaint {
         self.delay.saturating_sub(clock.elapsed())
     }
 
+    #[allow(dead_code)]
     pub fn reset(&mut self) {
         *self = Self::new();
     }

@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     context::{EventCtx, LayoutCtx, PaintCtx},
-    geom::{math::remap, pos2, size, Constraints, Pos2, Size},
+    geom::{math::remap, pos2, size, Constraints, Size},
     input::{Event, Handled, Interest, Key},
     paint::{shape::Filled, Attribute, Styled},
     widget::Response,
@@ -82,9 +82,9 @@ impl InputBuffer {
         inner.cursor += ch.len_utf8()
     }
 
-    fn select(&mut self, delta: i32) {}
-    fn select_word(&mut self, delta: i32) {}
-    fn delete_word(&mut self, delta: i32) {}
+    fn select(&mut self, _delta: i32) {}
+    fn select_word(&mut self, _delta: i32) {}
+    fn delete_word(&mut self, _delta: i32) {}
 
     fn select_home(&mut self) {
         // how should we do anchors?
@@ -186,7 +186,7 @@ impl Widget for InputWidget {
         let inner = self.props.inner.borrow();
         ctx.draw(Styled::new(&inner.buffer));
 
-        let cursor_pos = pos2(inner.cursor as _, 0) + Pos2::from(ctx.rect.left_top());
+        let cursor_pos = pos2(inner.cursor as _, 0) + ctx.rect.left_top();
         if let Some(cell) = ctx.canvas.get_mut(cursor_pos) {
             *cell = cell.attr(Attribute::UNDERLINE).fg(0xFF0000)
         }
@@ -257,7 +257,7 @@ impl Widget for InputWidget {
 
             Key::Enter => self.consume = true,
 
-            Key::Insert | Key::Tab | Key::BackTab | _ => return Handled::Bubble,
+            _ => return Handled::Bubble, // Key::Insert | Key::Tab | Key::BackTab
         }
 
         Handled::Sink

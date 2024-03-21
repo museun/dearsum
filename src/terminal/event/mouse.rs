@@ -4,7 +4,6 @@ use crate::geom::{Pos2, Vec2};
 pub enum MouseEvent {
     Move,
     Click { button: MouseButton },
-    Release { button: MouseButton },
     Held { button: MouseButton },
     DragStart { button: MouseButton },
     DragHeld { delta: Vec2, button: MouseButton },

@@ -57,6 +57,7 @@ impl Surface {
         self.back.reset();
     }
 
+    #[allow(dead_code)]
     pub fn draw(&mut self, shape: impl Shape) {
         shape.draw(self.rect().size(), |pos, cell| {
             Self::put(&mut self.back, pos, cell)

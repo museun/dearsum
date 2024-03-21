@@ -47,6 +47,7 @@ impl Buffer {
         pos.is_normalized() && pos.x < self.size.x && pos.y < self.size.y
     }
 
+    #[allow(dead_code)]
     pub fn get(&self, pos: Pos2) -> Option<&Cell> {
         if !pos.is_normalized() {
             return None;
