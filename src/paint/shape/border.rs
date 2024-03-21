@@ -1,10 +1,10 @@
 use crate::{
     color::Color,
-    geom::{rect, Margin, Pos2, Vec2},
+    geom::{pos2, rect, Margin, Pos2, Vec2},
     paint::Cell,
 };
 
-use super::{Line, Shape};
+use super::Shape;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Border {
@@ -25,16 +25,26 @@ impl Shape for Border {
     fn draw(&self, size: Vec2, mut put: impl FnMut(Pos2, Cell)) {
         let [left_top, right_top, right_bottom, left_bottom] = rect(size).corners();
 
-        let top = |_| Cell::new(self.top).fg(self.fg).bg(self.bg);
-        let bottom = |_| Cell::new(self.bottom).fg(self.fg).bg(self.bg);
-        let right = |_| Cell::new(self.right).fg(self.fg).bg(self.bg);
-        let left = |_| Cell::new(self.left).fg(self.fg).bg(self.bg);
+        let top = Cell::new(self.top).fg(self.fg).bg(self.bg);
+        let bottom = Cell::new(self.bottom).fg(self.fg).bg(self.bg);
+        let right = Cell::new(self.right).fg(self.fg).bg(self.bg);
+        let left = Cell::new(self.left).fg(self.fg).bg(self.bg);
 
-        Line::new(left_top, right_top, top).draw(size, &mut put);
-        Line::new(left_bottom, right_bottom, bottom).draw(size, &mut put);
+        for x in left_top.x..right_top.x {
+            put(pos2(x, left_top.y), top);
+        }
 
-        Line::new(right_top, right_bottom, right).draw(size, &mut put);
-        Line::new(left_top, left_bottom, left).draw(size, &mut put);
+        for x in left_bottom.x..right_bottom.x {
+            put(pos2(x, left_bottom.y), bottom);
+        }
+
+        for y in right_top.y..right_bottom.y {
+            put(pos2(right_top.x, y), right);
+        }
+
+        for y in left_top.y..left_bottom.y {
+            put(pos2(left_top.x, y), left);
+        }
 
         for (pos, cell) in [
             (left_top, self.left_top),
@@ -68,8 +78,9 @@ impl Border {
         Margin {
             left: (self.left != ' ' || self.left_top != ' ' || self.left_bottom != ' ') as _,
             top: (self.top != ' ' || self.left_top != ' ' || self.right_top != ' ') as _,
-            right: 0,
-            bottom: 0,
+            right: (self.right != ' ' || self.right_bottom != ' ' || self.right_bottom != ' ') as _,
+            bottom: (self.bottom != ' ' || self.left_bottom != ' ' || self.right_bottom != ' ')
+                as _,
         }
     }
 }

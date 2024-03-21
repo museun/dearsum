@@ -66,18 +66,17 @@ impl<T: Label + 'static> Widget for BorderWidget<T> {
     }
 
     fn paint(&self, ctx: PaintCtx) {
-        let rect = ctx.canvas.rect();
         ctx.canvas.draw(self.props.style);
         if let Some(title) = &self.props.title {
-            ctx.canvas.crop(rect.shrink2(vec2(1, 0))).draw(title)
+            ctx.canvas.crop(ctx.rect.shrink2(vec2(1, 0))).draw(title)
         }
         self.default_paint(ctx)
     }
 }
 
-pub fn border<R>(style: shape::Border, children: impl FnOnce() -> R) -> Response {
+pub fn border<R>(style: shape::Border, children: impl FnOnce() -> R) -> Response<NoResponse, R> {
     Border::plain(style).show(|| {
-        margin(Margin::same(1), children);
+        margin(Margin::same(1), children).into_output() //
     })
 }
 
@@ -85,14 +84,13 @@ pub fn frame<R, L: Label>(
     style: shape::Border,
     title: impl Into<Styled<L>>,
     children: impl FnOnce() -> R,
-) -> Response {
+) -> Response<NoResponse, R> {
     let mut border_margin = style.as_margin();
     let title = title.into();
     if !title.is_empty() {
         border_margin.top = border_margin.top.max(1);
     }
-
     Border::new(style, title).show(|| {
-        margin(border_margin, children);
+        margin(border_margin, children).into_output() //
     })
 }
