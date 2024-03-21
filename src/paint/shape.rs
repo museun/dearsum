@@ -19,7 +19,7 @@ mod border;
 pub use border::Border;
 
 mod line;
-pub use line::Line;
+pub use line::{HorizontalLine, VerticalLine};
 
 impl Shape for Cell {
     fn draw(&self, size: Vec2, mut put: impl FnMut(Pos2, Cell)) {
