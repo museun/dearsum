@@ -9,7 +9,7 @@ use std::{
 use crate::{
     animation,
     context::LayoutCtx,
-    geom::{Constraints, Pos2, Rect, Vec2},
+    geom::{Constraints, Pos2, Rect},
     input::{Handled, Input},
     node::{LayoutNode, Node, WidgetId},
     paint::Surface,
@@ -113,7 +113,7 @@ impl Inner {
             layout: &mut layout,
         };
 
-        let value = this.rect.get().size() + Vec2::splat(1);
+        let value = this.rect.get().size();
         ctx.compute(this.root, Constraints::tight(value.into()));
 
         Self::resolve(this.root, layout.nodes, layout.computed);
@@ -356,7 +356,6 @@ impl Inner {
         let mut queue = VecDeque::from_iter([id]);
         while let Some(id) = queue.pop_front() {
             removed.push(id);
-
             if let Some(node) = nodes.remove(id) {
                 queue.extend(node.children());
                 if let Some(parent) = node.parent {
@@ -393,16 +392,17 @@ impl Inner {
         nodes: &SlotMap<WidgetId, Node>,
         computed: &mut SecondaryMap<WidgetId, LayoutNode>,
     ) {
-        let mut queue = VecDeque::new();
-        queue.push_back((root, Pos2::ZERO));
-
+        let mut queue = VecDeque::from_iter([(root, Pos2::ZERO)]);
         while let Some((id, pos)) = queue.pop_front() {
             let Some(node) = computed.get_mut(id) else {
                 continue;
             };
 
-            node.rect = node.rect.translate(pos.to_vec2());
-            queue.extend(nodes[id].children().iter().map(|&id| (id, node.rect.min)));
+            node.rect += pos;
+            let next = nodes[id].children().iter().map(|&id| {
+                (id, node.rect.min) //
+            });
+            queue.extend(next);
         }
     }
 }

@@ -67,10 +67,10 @@ pub fn label<T: Label>(label: impl Into<Styled<T>>) -> Response {
     LabelWidget::show(MappedStyle::new(label).into_static())
 }
 
-pub fn mapped_label<T: Label, F: Fn(Pos2, Cell) -> Cell + 'static + Copy>(
-    label: impl Into<Styled<T>>,
-    map: F,
-) -> Response {
-    let props = MappedStyle::new(label).map(map).into_static();
-    LabelWidget::show(props)
+pub fn mapped_label<T, F>(label: impl Into<Styled<T>>, map: F) -> Response
+where
+    T: Label,
+    F: Fn(Pos2, Cell) -> Cell + 'static + Copy,
+{
+    LabelWidget::show(MappedStyle::new(label).map(map).into_static())
 }

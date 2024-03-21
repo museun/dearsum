@@ -78,9 +78,8 @@ impl Border {
         Margin {
             left: (self.left != ' ' || self.left_top != ' ' || self.left_bottom != ' ') as _,
             top: (self.top != ' ' || self.left_top != ' ' || self.right_top != ' ') as _,
-            right: (self.right != ' ' || self.right_bottom != ' ' || self.right_bottom != ' ') as _,
-            bottom: (self.bottom != ' ' || self.left_bottom != ' ' || self.right_bottom != ' ')
-                as _,
+            right: (self.right != ' ' || self.right_top != ' ' || self.right_bottom != ' ') as _,
+            bottom: (self.bottom != ' ' || self.left_top != ' ' || self.right_bottom != ' ') as _,
         }
     }
 }

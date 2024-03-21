@@ -26,7 +26,7 @@ pub use widget::{NoResponse, Widget, WidgetExt};
 
 mod debug_fmt;
 
-pub fn run(config: Config, mut app: impl FnMut(&Ui)) -> std::io::Result<()> {
+pub fn run<R>(config: Config, mut app: impl FnMut(&Ui) -> R) -> std::io::Result<()> {
     let mut terminal = Terminal::new(config)?;
     let ui = Ui::new(terminal.rect());
 
@@ -61,8 +61,12 @@ pub fn run(config: Config, mut app: impl FnMut(&Ui)) -> std::io::Result<()> {
             })?;
         }
 
+        if ui.quit() {
+            break;
+        }
+
         ui.tick(start.elapsed().as_secs_f32());
-        std::thread::sleep(ui.remaining(clock).min(Duration::from_secs_f32(1.0 / 6.0)));
+        std::thread::sleep(ui.remaining(clock).min(Duration::from_secs_f32(1.0 / 15.0)));
     }
 
     Ok(())

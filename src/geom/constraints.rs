@@ -185,6 +185,11 @@ impl Size {
     }
 
     #[must_use]
+    pub fn splat(d: f32) -> Self {
+        Self::new(d, d)
+    }
+
+    #[must_use]
     pub fn to_pos2(&self) -> Pos2 {
         pos2(self.x.ceil() as _, self.y.ceil() as _)
     }

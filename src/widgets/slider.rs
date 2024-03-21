@@ -5,13 +5,10 @@ use crate::{
     context::{EventCtx, LayoutCtx, PaintCtx},
     geom::{
         math::{almost_eq, remap},
-        pos2, size, Constraints, Size,
+        pos2, size, vec2, Constraints, Rect, Size,
     },
     input::{Event, Handled, Interest},
-    paint::{
-        shape::{Filled, Line},
-        Cell,
-    },
+    paint::{shape::Filled, Cell},
     widget::Response,
     NoResponse, Widget, WidgetExt as _,
 };
@@ -189,7 +186,10 @@ impl Widget for SliderWidget {
             (min, max),
         );
 
-        ctx.draw(Line::horizontal(x).custom_cell(|_| remaining_cell));
+        ctx.draw_cropped(
+            Rect::from_min_size(ctx.rect.min, vec2(x, 1)),
+            Filled::new(remaining_cell),
+        );
 
         ctx.put(pos2(x, ctx.rect.top()), knob_cell)
     }
