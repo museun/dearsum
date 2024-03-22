@@ -19,6 +19,7 @@ pub struct MouseAreaResponse {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Dragged {
+    pub origin: Pos2,
     pub current: Pos2,
     pub delta: Vec2,
 }
@@ -94,6 +95,7 @@ impl Widget for MouseAreaWidget {
             // TODO support different buttons for different states
             Event::MouseDrag(event) if self.props.is_drag() && event.button.is_primary() => {
                 self.dragged = Some(Dragged {
+                    origin: event.origin,
                     current: event.pos,
                     delta: event.delta,
                 });
