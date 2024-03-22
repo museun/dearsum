@@ -12,4 +12,5 @@ pub struct Layout<'a> {
     pub mouse: &'a mut Mouse,
     pub keyboard: &'a mut Keyboard,
     pub clip_stack: &'a mut Vec<WidgetId>,
+    pub debug: &'a mut Vec<String>,
 }

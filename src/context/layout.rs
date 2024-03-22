@@ -4,10 +4,10 @@ use crate::{
     LayoutNode, Node, WidgetId,
 };
 
-// TODO redo this api
 pub struct LayoutCtx<'a: 'b, 'b> {
     pub current: WidgetId,
     pub children: &'a [WidgetId],
+    pub size: Size,
     pub(crate) layout: &'b mut Layout<'a>,
 }
 
@@ -22,6 +22,7 @@ impl<'a: 'b, 'b> LayoutCtx<'a, 'b> {
         let widget = &node.widget;
         let size = widget.layout(
             LayoutCtx {
+                size: self.size, // TODO this is wrong
                 current: child,
                 children: node.children(),
                 layout: self.layout,
@@ -74,6 +75,10 @@ impl<'a: 'b, 'b> LayoutCtx<'a, 'b> {
         assert_eq!(self.layout.stack.pop(), Some(child));
 
         size
+    }
+
+    pub fn debug(&mut self, debug: impl ToString) {
+        self.layout.debug.push(debug.to_string())
     }
 
     pub fn get_node(&self, id: WidgetId) -> &Node {
