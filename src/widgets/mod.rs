@@ -98,9 +98,13 @@ pub use self::selected::TodoValue;
 pub use self::separator::separator;
 pub use self::separator::Separator;
 
+pub use self::sized::exact_size;
+pub use self::sized::expand_height;
+pub use self::sized::expand_width;
+pub use self::sized::max_height;
 pub use self::sized::max_size;
+pub use self::sized::max_width;
 pub use self::sized::min_size;
-pub use self::sized::Sized;
 
 pub use self::slider::slider;
 pub use self::slider::Slider;

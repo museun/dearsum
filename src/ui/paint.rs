@@ -7,6 +7,7 @@ use crate::paint::{CroppedSurface as Canvas, Styled};
 pub struct Paint {
     clip_stack: Vec<Rect>,
     debug: Vec<String>,
+    pub(crate) show_debug: bool,
 }
 
 impl Paint {
@@ -24,12 +25,15 @@ impl Paint {
     fn paint_debug(&mut self, canvas: &mut Canvas<'_>) {
         let mut pos = canvas.rect().right_top();
         for debug in self.debug.drain(..) {
-            let styled = Styled::new(debug).fg(0xFF0000).bg(0x000000);
-            let size = styled.size();
-            canvas
-                .crop(Rect::from_min_size(pos - pos2(size.x, 0), size))
-                .draw(styled);
-            pos.y += size.y;
+            if self.show_debug {
+                let styled = Styled::new(debug).fg(0xFF0000).bg(0x000000);
+                let size = styled.size();
+                let x = (pos.x as usize).saturating_sub(size.x as usize) as i32;
+                canvas
+                    .crop(Rect::from_min_size(pos2(x, pos.y), size))
+                    .draw(styled);
+                pos.y += size.y;
+            }
         }
     }
 

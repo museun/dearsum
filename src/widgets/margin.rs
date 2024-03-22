@@ -1,7 +1,7 @@
 use crate::{
     context::LayoutCtx,
     geom::{Constraints, Margin, Size},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -35,6 +35,6 @@ impl Widget for MarginWidget {
     }
 }
 
-pub fn margin<R>(margin: Margin, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn margin<R>(margin: Margin, show: impl FnOnce() -> R) -> UserResponse<R> {
     MarginWidget::show_children(margin, show)
 }

@@ -151,12 +151,14 @@ impl<T: Label> Shape for Styled<T> {
     }
 }
 
+#[track_caller]
 pub fn render(data: &str, rect: Rect, mut put: impl FnMut(Pos2, Cell)) {
     let offset = rect.left_top();
+    // eprintln!("offset: {offset:?}");
 
-    let mut start = pos2(0, 0) + offset;
+    let mut start = offset;
     for ch in data.chars() {
-        if start.x >= rect.width() || start.y >= rect.width() {
+        if start.x > rect.right() || start.y > rect.bottom() {
             break;
         }
         if ch == '\n' {

@@ -1,4 +1,4 @@
-use super::{pos2, Pos2};
+use super::{pos2, size, Pos2, Size};
 
 #[derive(Copy, Clone, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Vec2 {
@@ -50,6 +50,10 @@ impl Vec2 {
 
     pub const fn length_sq(&self) -> i32 {
         self.x * self.x + self.y * self.y
+    }
+
+    pub const fn to_size(&self) -> Size {
+        size(self.x as f32, self.y as f32)
     }
 
     // pub fn from_angle(&self) -> i32{}

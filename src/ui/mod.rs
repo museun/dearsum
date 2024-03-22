@@ -16,10 +16,10 @@ use std::{
 };
 
 mod layout;
-pub(crate) use layout::Layout;
+pub use layout::Layout;
 
 mod paint;
-pub(crate) use paint::Paint;
+pub use paint::Paint;
 
 mod context;
 pub mod debug;
@@ -28,7 +28,7 @@ mod repaint;
 use repaint::Repaint;
 
 mod inner;
-pub(crate) use inner::Inner;
+pub use inner::Inner;
 
 #[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, PartialOrd, Eq, Ord, Hash)]
@@ -36,6 +36,8 @@ pub enum Command {
     SetTitle(String),
     LeaveAltScreen,
     EnterAltScreen,
+    ShowDebug,
+    HideDebug,
     Quit,
 }
 
@@ -64,6 +66,14 @@ impl std::fmt::Debug for Ui {
 }
 
 impl Ui {
+    pub fn show_debug(&self) {
+        self.command(Command::ShowDebug)
+    }
+
+    pub fn hide_toggle(&self) {
+        self.command(Command::HideDebug)
+    }
+
     pub fn command(&self, cmd: Command) {
         self.inner.command(cmd)
     }

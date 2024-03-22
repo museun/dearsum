@@ -1,4 +1,4 @@
-use std::{borrow::Cow, rc::Rc};
+use std::{borrow::Cow, cell::Ref, rc::Rc};
 
 use crate::geom::{vec2, Vec2};
 
@@ -38,6 +38,22 @@ impl<T: Label + 'static> Label for Rc<T> {
 
     fn chars(&self) -> impl Iterator<Item = char> {
         <T as Label>::chars(self)
+    }
+}
+
+impl<'a> Label for Ref<'a, str> {
+    type Static = String;
+
+    fn into_static(self) -> Self::Static {
+        self.to_string()
+    }
+
+    fn size(&self) -> Vec2 {
+        size_of_str(self)
+    }
+
+    fn chars(&self) -> impl Iterator<Item = char> {
+        (**self).chars()
     }
 }
 

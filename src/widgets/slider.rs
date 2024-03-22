@@ -64,11 +64,12 @@ pub struct Slider {
     min: f32,
     max: f32,
 
+    step_by: Option<f32>,
+
     track: Color,
     filled: Color,
     knob: Color,
 
-    // TOOD step by
     style: SliderStyle,
 }
 
@@ -77,6 +78,7 @@ impl Slider {
         Self {
             min: *range.start(),
             max: *range.end(),
+            step_by: None,
 
             // TODO redo these with a color pair
             // TODO make these names more apparent what they control
@@ -105,6 +107,11 @@ impl Slider {
 
     pub fn knob(mut self, knob: impl Into<Color>) -> Self {
         self.knob = knob.into();
+        self
+    }
+
+    pub const fn step_by(mut self, step: f32) -> Self {
+        self.step_by = Some(step);
         self
     }
 
@@ -146,20 +153,24 @@ impl Widget for SliderWidget {
     }
 
     fn event(&mut self, ctx: EventCtx, event: Event) -> Handled {
-        if let Event::MouseDrag(event) = event {
-            // TODO not like this
-            self.value.replace(
-                remap(
-                    event.pos.x as f32,
-                    (ctx.rect.left() as f32, ctx.rect.right() as f32),
-                    (self.props.min, self.props.max),
-                )
-                .clamp(self.props.min, self.props.max),
-            );
-            return Handled::Sink;
-        }
+        let Event::MouseDrag(event) = event else {
+            return Handled::Bubble;
+        };
 
-        Handled::Bubble
+        // TODO not like this
+        let mut value = remap(
+            event.pos.x as f32,
+            (ctx.rect.left() as f32, ctx.rect.right() as f32),
+            (self.props.min, self.props.max),
+        )
+        .clamp(self.props.min, self.props.max);
+
+        if let Some(step) = self.props.step_by {
+            value = round_to_step(value, step)
+        }
+        self.value.replace(value);
+
+        Handled::Sink
     }
 
     fn layout(&self, _: LayoutCtx, input: Constraints) -> Size {
@@ -187,7 +198,7 @@ impl Widget for SliderWidget {
         );
 
         ctx.draw_cropped(
-            Rect::from_min_size(ctx.rect.min, vec2(x, 1)),
+            Rect::from_min_size(ctx.rect.min, vec2(x.saturating_sub_unsigned(1), 1)),
             Filled::new(remaining_cell),
         );
 
@@ -195,12 +206,12 @@ impl Widget for SliderWidget {
     }
 }
 
-// fn round_to_step(value: f32, step: f32) -> f32 {
-//     if step == 0.0 {
-//         return value;
-//     }
-//     (value / step).round() * step
-// }
+fn round_to_step(value: f32, step: f32) -> f32 {
+    if step == 0.0 {
+        return value;
+    }
+    (value / step).round() * step
+}
 
 pub fn slider(current: &mut f32, range: RangeInclusive<f32>) -> Response {
     Slider::new(range).show(current)

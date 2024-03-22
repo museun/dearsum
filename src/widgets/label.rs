@@ -53,7 +53,7 @@ where
         let Some(props) = &self.props else {
             return Size::ZERO;
         };
-        input.constrain_min(props.label.size().into())
+        input.constrain(props.label.size())
     }
 
     fn paint(&self, ctx: PaintCtx) {

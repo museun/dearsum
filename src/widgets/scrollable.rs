@@ -5,7 +5,7 @@ use crate::{
     geom::{math::remap, pos2, size, vec2, Constraints, Rect, Size, Vec2},
     input::{Event, Handled, Interest, Key, KeyPressed},
     paint::{shape::Filled, Cell},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -33,7 +33,7 @@ impl Scrollable {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> UserResponse<R> {
         ScrollableWidget::show_children(self, show)
     }
 }
@@ -148,6 +148,6 @@ impl Widget for ScrollableWidget {
     }
 }
 
-pub fn scrollable<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn scrollable<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     Scrollable::new().show(show)
 }

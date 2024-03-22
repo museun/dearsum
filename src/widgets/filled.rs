@@ -3,7 +3,7 @@ use crate::{
     context::{LayoutCtx, PaintCtx},
     geom::{Constraints, Size},
     paint::{shape::Filled, Cell},
-    widget::Response,
+    widget::{Response, UserResponse},
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -39,7 +39,7 @@ pub fn render_cell(cell: impl Into<Cell>) -> Response {
     FilledWidget::show((Filled::new(cell.into()), Size::ZERO))
 }
 
-pub fn filled<R>(bg: impl Into<Rgba>, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn filled<R>(bg: impl Into<Rgba>, show: impl FnOnce() -> R) -> UserResponse<R> {
     FilledWidget::show_children((Filled::bg(bg), Size::ZERO), show)
 }
 

@@ -3,7 +3,7 @@ use crate::{
     geom::{
         size, Constraints, CrossAxisAlignment, FlexFit, Flow, MainAxisAlignment, MainAxisSize, Size,
     },
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -91,7 +91,7 @@ impl List {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> UserResponse<R> {
         ListWidget::show_children(self, show)
     }
 }
@@ -279,10 +279,10 @@ fn spacing(alignment: MainAxisAlignment, children: usize, main_size: f32, total_
     size
 }
 
-pub fn row<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn row<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     List::row().show(show)
 }
 
-pub fn column<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn column<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     List::column().show(show)
 }

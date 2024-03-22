@@ -7,10 +7,14 @@ pub enum FlexFit {
     Tight,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub enum Flow {
+    #[default]
     Inline,
-    Relative { anchor: Align2, offset: Dimension2 },
+    Relative {
+        anchor: Align2,
+        offset: Dimension2,
+    },
 }
 
 impl Flow {
@@ -109,10 +113,12 @@ pub struct Constraints {
 }
 
 impl Constraints {
+    #[must_use]
     pub const fn new(min: Size, max: Size) -> Self {
         Self { min, max }
     }
 
+    #[must_use]
     pub const fn loose(max: Size) -> Self {
         Self {
             min: Size::ZERO,
@@ -120,6 +126,7 @@ impl Constraints {
         }
     }
 
+    #[must_use]
     pub const fn tight(value: Size) -> Self {
         Self {
             min: value,
@@ -127,6 +134,7 @@ impl Constraints {
         }
     }
 
+    #[must_use]
     pub fn none() -> Self {
         Self {
             min: Size::ZERO,
@@ -134,11 +142,15 @@ impl Constraints {
         }
     }
 
-    pub fn constrain_min(&self, base: Size) -> Size {
+    #[must_use]
+    pub fn constrain_min(&self, base: impl Into<Size>) -> Size {
+        let base = base.into();
         base.max(self.min)
     }
 
-    pub fn constrain(&self, base: Size) -> Size {
+    #[must_use]
+    pub fn constrain(&self, base: impl Into<Size>) -> Size {
+        let base = base.into();
         base.max(self.min).min(self.max)
     }
 
@@ -158,6 +170,15 @@ impl Constraints {
         self.min == self.max
     }
 
+    #[must_use]
+    pub fn clamp(self, min: Self, max: Self) -> Self {
+        Self::new(
+            self.min.clamp(min.min, min.max),
+            self.max.clamp(max.min, max.max),
+        )
+    }
+
+    #[must_use]
     pub fn size(&self) -> Size {
         if self.max.is_finite() {
             self.max

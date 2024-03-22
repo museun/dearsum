@@ -2,7 +2,7 @@ use crate::{
     context::PaintCtx,
     geom::{vec2, Margin},
     paint::{shape, Label, Styled},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -24,7 +24,7 @@ impl<T: Label + 'static> Default for Border<T> {
 }
 
 impl<T: Label> Border<T> {
-    pub fn show<R>(self, children: impl FnOnce() -> R) -> Response<NoResponse, R> {
+    pub fn show<R>(self, children: impl FnOnce() -> R) -> UserResponse<R> {
         <BorderWidget<T>>::show_children(self, children)
     }
 }
@@ -74,7 +74,7 @@ impl<T: Label + 'static> Widget for BorderWidget<T> {
     }
 }
 
-pub fn border<R>(style: shape::Border, children: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn border<R>(style: shape::Border, children: impl FnOnce() -> R) -> UserResponse<R> {
     Border::plain(style).show(|| {
         margin(Margin::same(1), children).into_output() //
     })
@@ -84,7 +84,7 @@ pub fn frame<R, L: Label>(
     style: shape::Border,
     title: impl Into<Styled<L>>,
     children: impl FnOnce() -> R,
-) -> Response<NoResponse, R> {
+) -> UserResponse<R> {
     let mut border_margin = style.as_margin();
     let title = title.into();
     if !title.is_empty() {

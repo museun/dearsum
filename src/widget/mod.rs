@@ -15,7 +15,7 @@ mod root;
 pub(crate) use root::RootWidget;
 
 mod response;
-pub use response::Response;
+pub use response::{Response, UserResponse};
 
 pub type NoResponse = ();
 

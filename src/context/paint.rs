@@ -9,8 +9,8 @@ pub struct PaintCtx<'a: 'c, 'c> {
     pub rect: Rect,
     pub current_id: WidgetId,
     pub children: &'a [WidgetId],
+    pub canvas: &'a mut Canvas<'c>,
 
-    pub(crate) canvas: &'a mut Canvas<'c>,
     pub(crate) ui: &'a Inner,
     pub(crate) paint: &'a mut Paint,
 }

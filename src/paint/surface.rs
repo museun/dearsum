@@ -152,6 +152,19 @@ impl Surface {
     }
 }
 
+impl std::ops::Index<Pos2> for Surface {
+    type Output = Cell;
+    fn index(&self, index: Pos2) -> &Self::Output {
+        &self.current()[index]
+    }
+}
+
+impl std::ops::IndexMut<Pos2> for Surface {
+    fn index_mut(&mut self, index: Pos2) -> &mut Self::Output {
+        &mut self.current_mut()[index]
+    }
+}
+
 pub struct CroppedSurface<'a> {
     surface: &'a mut Surface,
     rect: Rect,
@@ -182,6 +195,19 @@ impl<'a> CroppedSurface<'a> {
 
     fn translate(&self, pos: Pos2) -> Pos2 {
         pos + self.rect.left_top()
+    }
+}
+
+impl<'a> std::ops::Index<Pos2> for CroppedSurface<'a> {
+    type Output = Cell;
+    fn index(&self, index: Pos2) -> &Self::Output {
+        &self.surface[index]
+    }
+}
+
+impl<'a> std::ops::IndexMut<Pos2> for CroppedSurface<'a> {
+    fn index_mut(&mut self, index: Pos2) -> &mut Self::Output {
+        &mut self.surface[index]
     }
 }
 

@@ -1,4 +1,6 @@
-use crate::node::WidgetId;
+use crate::{node::WidgetId, NoResponse};
+
+pub type UserResponse<R> = Response<NoResponse, R>;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Response<R = (), T = ()> {
@@ -12,7 +14,7 @@ impl<R, T> Response<R, T> {
         Self { id, inner, output }
     }
 
-    pub fn into_inner(self) -> R {
+    pub fn take(self) -> R {
         self.inner
     }
 

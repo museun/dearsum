@@ -130,8 +130,8 @@ impl DebugNode {
                     " x: {} y: {}, w: {} h: {} ",
                     node.rect.left(),
                     node.rect.top(),
-                    node.rect.right(),
-                    node.rect.bottom()
+                    node.rect.width(),
+                    node.rect.height()
                 );
 
                 let labels = [
@@ -398,7 +398,7 @@ impl std::fmt::Display for DebugOutput {
     }
 }
 
-pub fn debug_app<R>(mut app: impl FnMut(&Ui) -> R) -> DebugOutput {
+pub fn evaluate<R>(mut app: impl FnMut(&Ui) -> R) -> DebugOutput {
     let mut surface = Surface::new(vec2(80, 25));
     let ui = Ui::new(surface.rect());
 
@@ -408,11 +408,18 @@ pub fn debug_app<R>(mut app: impl FnMut(&Ui) -> R) -> DebugOutput {
     let mut debug = DebugRenderer::default();
     surface.render(&mut debug).unwrap();
 
+    let rect = surface.rect();
+
     use crate::debug_fmt::{secondary_map, slot_map};
     DebugOutput {
         nodes: format!("{:#?}", slot_map(&ui.nodes())),
         layout: format!("{:#?}", secondary_map(&ui.computed())),
-        render: debug.out,
+        render: format!(
+            "width: {} height: {}\n{}",
+            rect.width(),
+            rect.height(),
+            debug.out
+        ),
         node: DebugNode::build(&ui),
     }
 }

@@ -1,7 +1,7 @@
 use crate::{
     context::LayoutCtx,
     geom::{Constraints, Pos2, Size},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -29,6 +29,6 @@ impl Widget for OffsetWidget {
     }
 }
 
-pub fn offset<R>(pos: Pos2, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn offset<R>(pos: Pos2, show: impl FnOnce() -> R) -> UserResponse<R> {
     OffsetWidget::show_children(pos, show)
 }

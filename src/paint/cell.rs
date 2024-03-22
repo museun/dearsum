@@ -44,6 +44,11 @@ impl Cell {
         self
     }
 
+    pub const fn char(mut self, char: char) -> Self {
+        self.char = char;
+        self
+    }
+
     pub fn bg(mut self, bg: impl Into<Color>) -> Self {
         self.bg = bg.into();
         self
@@ -52,6 +57,10 @@ impl Cell {
     pub fn attr(mut self, attr: impl Into<Option<Attribute>>) -> Self {
         self.attr = attr.into().map(CellAttr::Attr).unwrap_or(CellAttr::Reset);
         self
+    }
+
+    pub fn patch(&mut self, mut patch: impl FnMut(&mut Self) -> Self) {
+        *self = patch(self)
     }
 }
 

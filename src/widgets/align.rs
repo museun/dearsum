@@ -1,7 +1,7 @@
 use crate::{
     context::LayoutCtx,
     geom::{Align2, Constraints, Size},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -33,10 +33,10 @@ impl Widget for AlignWidget {
     }
 }
 
-pub fn align<R>(align: Align2, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn align<R>(align: Align2, show: impl FnOnce() -> R) -> UserResponse<R> {
     AlignWidget::show_children(align, show)
 }
 
-pub fn center<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn center<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     self::align(Align2::CENTER_CENTER, show)
 }

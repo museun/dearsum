@@ -1,4 +1,8 @@
-use crate::{geom::FlexFit, widget::Response, NoResponse, Widget, WidgetExt as _};
+use crate::{
+    geom::FlexFit,
+    widget::{Response, UserResponse},
+    NoResponse, Widget, WidgetExt as _,
+};
 
 #[derive(Debug)]
 struct Flex {
@@ -26,7 +30,7 @@ impl Widget for FlexWidget {
     }
 }
 
-pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> UserResponse<R> {
     let props = Flex {
         factor,
         flex: FlexFit::Loose,
@@ -34,10 +38,10 @@ pub fn flex<R>(factor: u16, show: impl FnOnce() -> R) -> Response<NoResponse, R>
     FlexWidget::show_children(props, show)
 }
 
-pub fn expanded<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn expanded<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     let props = Flex {
-        flex: FlexFit::Tight,
         factor: 1,
+        flex: FlexFit::Tight,
     };
     FlexWidget::show_children(props, show)
 }

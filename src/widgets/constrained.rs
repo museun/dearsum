@@ -1,7 +1,7 @@
 use crate::{
     context::LayoutCtx,
     geom::{Constraints, Size},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -42,10 +42,7 @@ impl Widget for ConstrainedWidget {
     }
 }
 
-pub fn constrained<R>(
-    constraints: Constraints,
-    show: impl FnOnce() -> R,
-) -> Response<NoResponse, R> {
+pub fn constrained<R>(constraints: Constraints, show: impl FnOnce() -> R) -> UserResponse<R> {
     ConstrainedWidget::show_children(constraints, show)
 }
 
@@ -73,7 +70,7 @@ impl Unconstrained {
         self
     }
 
-    pub fn show<R>(self, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+    pub fn show<R>(self, show: impl FnOnce() -> R) -> UserResponse<R> {
         UnconstainedWidget::show_children(self, show)
     }
 }
@@ -116,6 +113,6 @@ impl Widget for UnconstainedWidget {
     }
 }
 
-pub fn unconstrained<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn unconstrained<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     Unconstrained::new().show(show)
 }

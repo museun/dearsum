@@ -1,7 +1,7 @@
 use crate::{
     context::LayoutCtx,
     geom::{Constraints, Size},
-    widget::Response,
+    widget::UserResponse,
     NoResponse, Widget, WidgetExt as _,
 };
 
@@ -20,7 +20,7 @@ impl Widget for FloatWidget {
     }
 }
 
-pub fn float<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn float<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     FloatWidget::show_children((), show)
 }
 
@@ -39,6 +39,6 @@ impl Widget for ClipWidget {
     }
 }
 
-pub fn clip<R>(show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn clip<R>(show: impl FnOnce() -> R) -> UserResponse<R> {
     ClipWidget::show_children((), show)
 }

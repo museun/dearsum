@@ -1,16 +1,8 @@
-use crate::{geom::Flow, widget::Response, NoResponse, Widget, WidgetExt as _};
+use crate::{geom::Flow, widget::UserResponse, NoResponse, Widget, WidgetExt as _};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct FlowWidget {
     props: Flow,
-}
-
-impl Default for FlowWidget {
-    fn default() -> Self {
-        Self {
-            props: Flow::Inline,
-        }
-    }
 }
 
 impl Widget for FlowWidget {
@@ -26,6 +18,6 @@ impl Widget for FlowWidget {
     }
 }
 
-pub fn flow<R>(flow: Flow, show: impl FnOnce() -> R) -> Response<NoResponse, R> {
+pub fn flow<R>(flow: Flow, show: impl FnOnce() -> R) -> UserResponse<R> {
     FlowWidget::show_children(flow, show)
 }

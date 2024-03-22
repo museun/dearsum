@@ -44,6 +44,7 @@ pub struct Inner {
 
     pub debug: RefCell<Vec<String>>,
     pub quit: Cell<bool>,
+    pub show_debug: Cell<bool>,
 }
 
 impl Inner {
@@ -104,6 +105,7 @@ impl Inner {
             stack: &mut this.stack.borrow_mut(),
             mouse: &mut mouse,
             keyboard: &mut keyboard,
+            client_rect: this.rect.get(),
             clip_stack: &mut this.clip_stack.borrow_mut(),
             debug: &mut this.debug.borrow_mut(),
         };
@@ -126,6 +128,7 @@ impl Inner {
 
     pub fn paint(&self, surface: &mut Surface) {
         let mut paint = Paint::default();
+        paint.show_debug = self.show_debug.get();
         for debug in self.debug.borrow_mut().drain(..) {
             paint.debug(debug);
         }
@@ -175,6 +178,8 @@ impl Inner {
                 Command::Quit => self.quit.set(true),
                 Command::LeaveAltScreen => terminal.leave_alt_screen()?,
                 Command::EnterAltScreen => terminal.enter_alt_screen()?,
+                Command::ShowDebug => self.show_debug.set(true),
+                Command::HideDebug => self.show_debug.set(false),
             }
         }
         Ok(())

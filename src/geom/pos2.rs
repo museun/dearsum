@@ -100,7 +100,7 @@ impl std::ops::Sub<Vec2> for Pos2 {
 impl std::ops::Add for Pos2 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
-        pos2(self.x.saturating_add(rhs.x), self.y.saturating_add(rhs.y))
+        pos2(self.x + rhs.x, self.y + rhs.y)
     }
 }
 

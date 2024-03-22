@@ -62,10 +62,15 @@ impl<'a: 'b, 'b> LayoutCtx<'a, 'b> {
             self.layout.clip_stack.pop();
         }
 
+        let rect = Rect::from_min_size(
+            Pos2::ZERO,
+            size.to_vec2()
+                .clamp(Vec2::ZERO, self.layout.client_rect.size()),
+        );
         self.layout.computed.insert(
             child,
             LayoutNode {
-                rect: Rect::from_min_size(Pos2::ZERO, size.into()),
+                rect,
                 interest: widget.interest(),
                 clipped_by,
                 clipping,
