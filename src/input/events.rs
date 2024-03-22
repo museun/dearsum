@@ -58,7 +58,7 @@ pub struct MouseHeld {
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct MouseDrag {
     pub released: bool,
-    // TODO should we keep the origin?
+    pub origin: Pos2,
     pub pos: Pos2,
     pub delta: Vec2,
     pub button: MouseButton,

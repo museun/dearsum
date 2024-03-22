@@ -45,7 +45,7 @@ fn translate(ev: crossterm::event::Event, state: &mut MouseState) -> Option<Even
         E::Paste(data) => Event::Paste(data),
         E::Resize(cols, rows) => Event::Resize(rect(vec2(cols as _, rows as _))),
 
-        E::Key(ev) if matches!(ev.kind, KeyEventKind::Release) => {
+        E::Key(ev) if matches!(ev.kind, KeyEventKind::Press) => {
             let key = ev.code.try_into().ok()?;
             let modifiers = ev.modifiers.into();
             Event::Keyboard(key, modifiers)

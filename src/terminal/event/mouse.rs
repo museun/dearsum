@@ -3,12 +3,27 @@ use crate::geom::{Pos2, Vec2};
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum MouseEvent {
     Move,
-    Click { button: MouseButton },
-    Held { button: MouseButton },
-    DragStart { button: MouseButton },
-    DragHeld { delta: Vec2, button: MouseButton },
-    DragRelease { button: MouseButton },
-    Scroll { delta: Vec2 },
+    Click {
+        button: MouseButton,
+    },
+    Held {
+        button: MouseButton,
+    },
+    DragStart {
+        button: MouseButton,
+    },
+    DragHeld {
+        origin: Pos2,
+        delta: Vec2,
+        button: MouseButton,
+    },
+    DragRelease {
+        origin: Pos2,
+        button: MouseButton,
+    },
+    Scroll {
+        delta: Vec2,
+    },
 }
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
@@ -80,14 +95,13 @@ impl MouseState {
                     self.button.take();
                     MouseEvent::Click { button }
                 }
-                Kind::Drag(..) if Some(button) == self.button => {
+                Kind::Drag(_, origin) if Some(button) == self.button => {
                     self.button.take();
-                    MouseEvent::DragRelease { button }
+                    MouseEvent::DragRelease { origin, button }
                 }
                 _ => return None,
             },
 
-            // TODO this is all wrong
             E::Drag(pos, button) => match std::mem::take(&mut self.previous) {
                 Kind::None if self.pos == pos => {
                     self.previous = Kind::Held;
@@ -112,6 +126,7 @@ impl MouseState {
                     self.button = Some(button);
                     self.pos = origin;
                     MouseEvent::DragHeld {
+                        origin,
                         delta: Vec2::ZERO,
                         button,
                     }
@@ -121,6 +136,7 @@ impl MouseState {
                     self.button = Some(button);
                     self.pos = origin;
                     MouseEvent::DragHeld {
+                        origin,
                         delta: (pos - old).to_vec2(),
                         button,
                     }

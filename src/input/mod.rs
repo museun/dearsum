@@ -165,6 +165,7 @@ impl Input {
                 let event = MouseDrag {
                     released: false,
                     pos,
+                    origin: pos,
                     delta: Vec2::ZERO,
                     button,
                     modifiers: self.modifiers,
@@ -172,11 +173,16 @@ impl Input {
                 ctx!().mouse_drag(event)
             }
 
-            MouseEvent::DragHeld { delta, button } => {
+            MouseEvent::DragHeld {
+                origin,
+                delta,
+                button,
+            } => {
                 self.mouse.buttons.insert(button, ButtonState::Held);
                 let event = MouseDrag {
                     released: false,
                     pos,
+                    origin,
                     delta,
                     button,
                     modifiers: self.modifiers,
@@ -184,11 +190,12 @@ impl Input {
                 ctx!().mouse_drag(event)
             }
 
-            MouseEvent::DragRelease { button } => {
+            MouseEvent::DragRelease { origin, button } => {
                 self.mouse.buttons.insert(button, ButtonState::Released);
                 let event = MouseDrag {
                     released: true,
                     pos,
+                    origin,
                     delta: Vec2::ZERO,
                     button,
                     modifiers: self.modifiers,
