@@ -27,6 +27,8 @@ pub use widget::{NoResponse, Widget, WidgetExt};
 mod debug_fmt;
 
 pub fn run<R>(config: Config, mut app: impl FnMut(&Ui) -> R) -> std::io::Result<()> {
+    let limited_rate = Duration::from_secs_f32(1.0 / 10.0);
+
     let mut terminal = Terminal::new(config)?;
     let ui = Ui::new(terminal.rect());
 
@@ -45,6 +47,10 @@ pub fn run<R>(config: Config, mut app: impl FnMut(&Ui) -> R) -> std::io::Result<
         while let Some(ev) = terminal.read_next_event() {
             if matches!(ev, terminal::event::Event::Quit) {
                 ui.set_quit();
+                // TODO let the app also get the quit event
+                if ui.quit() {
+                    break;
+                }
             }
 
             // TODO handle this
@@ -66,7 +72,7 @@ pub fn run<R>(config: Config, mut app: impl FnMut(&Ui) -> R) -> std::io::Result<
         }
 
         ui.tick(start.elapsed().as_secs_f32());
-        std::thread::sleep(ui.remaining(clock).min(Duration::from_secs_f32(1.0 / 15.0)));
+        std::thread::sleep(ui.remaining(clock).min(limited_rate));
     }
 
     Ok(())

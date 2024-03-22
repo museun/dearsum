@@ -11,7 +11,7 @@ mod label;
 pub use label::Label;
 
 mod styled;
-pub use styled::Styled;
+pub use styled::{render, Styled};
 
 mod mapped;
 pub use mapped::MappedStyle;

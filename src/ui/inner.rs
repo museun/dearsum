@@ -105,16 +105,19 @@ impl Inner {
             mouse: &mut mouse,
             keyboard: &mut keyboard,
             clip_stack: &mut this.clip_stack.borrow_mut(),
+            debug: &mut this.debug.borrow_mut(),
         };
+
+        let size = this.rect.get().size().into();
 
         let mut ctx = LayoutCtx {
             current: this.root,
+            size,
             children: &layout.nodes[this.root].children,
             layout: &mut layout,
         };
 
-        let value = this.rect.get().size();
-        ctx.compute(this.root, Constraints::tight(value.into()));
+        ctx.compute(this.root, Constraints::tight(size));
 
         Self::resolve(this.root, layout.nodes, layout.computed);
 
