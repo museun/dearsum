@@ -154,7 +154,6 @@ impl<T: Label> Shape for Styled<T> {
 #[track_caller]
 pub fn render(data: &str, rect: Rect, mut put: impl FnMut(Pos2, Cell)) {
     let offset = rect.left_top();
-    // eprintln!("offset: {offset:?}");
 
     let mut start = offset;
     for ch in data.chars() {
@@ -166,6 +165,7 @@ pub fn render(data: &str, rect: Rect, mut put: impl FnMut(Pos2, Cell)) {
             start.x = offset.x;
             continue;
         }
+
         put(start, Cell::new(ch));
         start.x += 1;
     }
