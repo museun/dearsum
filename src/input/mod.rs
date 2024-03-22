@@ -120,7 +120,7 @@ impl Input {
         layout: &mut SecondaryMap<WidgetId, LayoutNode>,
         debug: &mut Vec<String>,
     ) -> Handled {
-        self.mouse.pos = pos;
+        self.mouse.prev = std::mem::replace(&mut self.mouse.pos, pos);
 
         macro_rules! ctx {
             () => {
@@ -225,114 +225,103 @@ struct MouseContext<'a> {
     nodes: &'a mut SlotMap<WidgetId, Node>,
     layout: &'a mut SecondaryMap<WidgetId, LayoutNode>,
     mouse: &'a mut Mouse,
-
     intersections: &'a mut Intersections,
     debug: &'a mut Vec<String>,
 }
 
 impl<'a> MouseContext<'a> {
     fn mouse_move(&mut self, event: MouseMove) -> Handled {
-        {
-            for (id, interest) in self.mouse.layered.iter() {
-                if !interest.is_mouse_move() {
-                    continue;
-                }
-
-                let node = &mut self.nodes[*id];
-                let ctx = EventCtx {
-                    rect: self.layout[*id].rect,
-                    current: *id,
-                    children: &node.children,
-                    hovered: &self.mouse.mouse_over,
-                    computed: self.layout,
-                    debug: self.debug,
-                };
-                node.widget.event(ctx, Event::MouseMove(event));
+        for (id, interest) in self.mouse.layered.iter() {
+            if !interest.is_mouse_move() {
+                continue;
             }
+
+            let node = &mut self.nodes[*id];
+            let ctx = EventCtx {
+                rect: self.layout[*id].rect,
+                current: *id,
+                children: &node.children,
+                hovered: &self.mouse.mouse_over,
+                computed: self.layout,
+                debug: self.debug,
+            };
+            node.widget.event(ctx, Event::MouseMove(event));
         }
 
-        {
-            self.intersections.hit.clear();
-            self.hit_test(event.pos);
-        }
-        {
-            for &hit in &self.intersections.hit {
-                if !self.intersections.entered.contains(&hit) {
-                    continue;
-                }
+        self.intersections.hit.clear();
+        self.hit_test(event.pos);
 
-                self.intersections.entered.push(hit);
+        for &hit in &self.intersections.hit {
+            if self.intersections.entered.contains(&hit) {
+                continue;
+            }
 
-                self.mouse.hovered(hit);
+            self.intersections.entered.push(hit);
 
-                let node = &mut self.nodes[hit];
-                let ctx = EventCtx {
-                    rect: self.layout[hit].rect,
-                    current: hit,
-                    children: &node.children,
-                    hovered: &self.mouse.mouse_over,
-                    computed: self.layout,
-                    debug: self.debug,
-                };
+            self.mouse.hovered(hit);
 
-                let resp = node.widget.event(ctx, Event::MouseEnter(event));
+            let node = &mut self.nodes[hit];
+            let ctx = EventCtx {
+                rect: self.layout[hit].rect,
+                current: hit,
+                children: &node.children,
+                hovered: &self.mouse.mouse_over,
+                computed: self.layout,
+                debug: self.debug,
+            };
 
-                if resp.is_sink() {
-                    self.intersections.entered_and_sunk.push(hit);
-                    break;
-                }
+            let resp = node.widget.event(ctx, Event::MouseEnter(event));
 
-                if self.intersections.entered_and_sunk.contains(&hit) {
-                    break;
-                }
+            if resp.is_sink() {
+                self.intersections.entered_and_sunk.push(hit);
+                break;
+            }
+
+            if self.intersections.entered_and_sunk.contains(&hit) {
+                break;
             }
         }
 
         let mut inactive = vec![];
-        {
-            for (hit, _) in self.mouse.layered.iter() {
-                if !self.intersections.entered.contains(hit) {
-                    continue;
-                }
-
-                let Some(node) = self.layout.get(*hit) else {
-                    continue;
-                };
-
-                if node.rect.contains(event.pos) {
-                    continue;
-                }
-
-                self.mouse.mouse_over.remove(hit);
-
-                let node = &mut self.nodes[*hit];
-                let ctx = EventCtx {
-                    rect: self.layout[*hit].rect,
-                    current: *hit,
-                    children: &node.children,
-                    hovered: &self.mouse.mouse_over,
-                    computed: self.layout,
-                    debug: self.debug,
-                };
-                node.widget.event(ctx, Event::MouseLeave(event));
-                inactive.push(hit)
+        for (hit, _) in self.mouse.layered.iter() {
+            if !self.intersections.entered.contains(hit) {
+                continue;
             }
+
+            let Some(node) = self.layout.get(*hit) else {
+                continue;
+            };
+
+            if node.rect.contains(event.pos) {
+                continue;
+            }
+
+            self.mouse.mouse_over.remove(hit);
+
+            let node = &mut self.nodes[*hit];
+            let ctx = EventCtx {
+                rect: self.layout[*hit].rect,
+                current: *hit,
+                children: &node.children,
+                hovered: &self.mouse.mouse_over,
+                computed: self.layout,
+                debug: self.debug,
+            };
+            node.widget.event(ctx, Event::MouseLeave(event));
+            inactive.push(hit)
         }
-        {
-            for inactive in inactive {
-                self.intersections.entered.retain(|id| id != inactive);
-                self.intersections
-                    .entered_and_sunk
-                    .retain(|id| id != inactive)
-            }
+
+        for inactive in inactive {
+            self.intersections.entered.retain(|id| id != inactive);
+            self.intersections
+                .entered_and_sunk
+                .retain(|id| id != inactive)
         }
 
         Handled::Bubble
     }
 
     fn mouse_button(&mut self, event: &Event) -> Handled {
-        let mut resp = Handled::Bubble;
-
         for (id, interest) in self.mouse.layered.iter() {
             if !interest.is_mouse_any() {
                 continue;
@@ -352,26 +341,16 @@ impl<'a> MouseContext<'a> {
                 debug: self.debug,
             };
 
-            resp = node.widget.event(ctx, *event);
-            if resp.is_sink() {
-                break;
+            if node.widget.event(ctx, *event).is_sink() {
+                return Handled::Sink;
             }
         }
 
-        resp
+        Handled::Bubble
     }
 
     fn mouse_drag(&mut self, event: MouseDrag) -> Handled {
-        let resp = self.send_mouse_event(&Event::MouseDrag(event));
-        if event.released {
-            // let mouse_click = MouseClick {
-            //     pos: event.pos,
-            //     button: event.button,
-            //     modifiers: event.modifiers,
-            // };
-            // self.send_mouse_event(&Event::MouseClick(mouse_click));
-        }
-        resp
+        self.send_mouse_event(&Event::MouseDrag(event))
     }
 
     fn mouse_scroll(&mut self, event: MouseScroll) -> Handled {
@@ -379,8 +358,6 @@ impl<'a> MouseContext<'a> {
     }
 
     fn send_mouse_event(&mut self, event: &Event) -> Handled {
-        let mut resp = Handled::Bubble;
-
         for &id in &self.intersections.hit {
             let node = &mut self.nodes[id];
             let ctx = EventCtx {
@@ -391,13 +368,12 @@ impl<'a> MouseContext<'a> {
                 computed: self.layout,
                 debug: self.debug,
             };
-            resp = node.widget.event(ctx, *event);
-            if resp.is_sink() {
-                break;
+            if node.widget.event(ctx, *event).is_sink() {
+                return Handled::Sink;
             }
         }
 
-        resp
+        Handled::Bubble
     }
 
     fn hit_test(&mut self, pos: Pos2) {

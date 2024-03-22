@@ -64,7 +64,10 @@ enum Kind {
     None,
     Held,
     DragStart(Pos2),
-    Drag(Pos2, Pos2),
+    Drag {
+        previous: Pos2,
+        origin: Pos2,
+    },
 }
 
 #[derive(Default)]
@@ -95,7 +98,8 @@ impl MouseState {
                     self.button.take();
                     MouseEvent::Click { button }
                 }
-                Kind::Drag(_, origin) if Some(button) == self.button => {
+
+                Kind::Drag { origin, .. } if Some(button) == self.button => {
                     self.button.take();
                     MouseEvent::DragRelease { origin, button }
                 }
@@ -122,7 +126,10 @@ impl MouseState {
                     MouseEvent::DragStart { button }
                 }
                 Kind::DragStart(origin) if self.check(origin, button) => {
-                    self.previous = Kind::Drag(origin, origin);
+                    self.previous = Kind::Drag {
+                        previous: origin,
+                        origin,
+                    };
                     self.button = Some(button);
                     self.pos = origin;
                     MouseEvent::DragHeld {
@@ -131,8 +138,14 @@ impl MouseState {
                         button,
                     }
                 }
-                Kind::Drag(old, origin) if self.check(origin, button) => {
-                    self.previous = Kind::Drag(pos, origin);
+                Kind::Drag {
+                    previous: old,
+                    origin,
+                } if self.check(origin, button) => {
+                    self.previous = Kind::Drag {
+                        previous: pos,
+                        origin,
+                    };
                     self.button = Some(button);
                     self.pos = origin;
                     MouseEvent::DragHeld {

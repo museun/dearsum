@@ -7,6 +7,7 @@ use crate::{geom::Pos2, node::WidgetId};
 #[derive(Debug, Default)]
 pub(crate) struct Mouse {
     pub(crate) pos: Pos2,
+    pub(crate) prev: Pos2,
     pub(crate) layered: Layered<Interest>,
     pub(crate) mouse_over: HashSet<WidgetId>,
     pub(crate) buttons: HashMap<MouseButton, ButtonState>,
