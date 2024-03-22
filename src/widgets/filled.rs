@@ -43,6 +43,6 @@ pub fn filled<R>(bg: impl Into<Rgba>, show: impl FnOnce() -> R) -> UserResponse<
     FilledWidget::show_children((Filled::bg(bg), Size::ZERO), show)
 }
 
-pub fn filled_rect(bg: impl Into<Rgba>, min_size: Size) -> Response {
-    FilledWidget::show((Filled::bg(bg), min_size))
+pub fn filled_rect(bg: impl Into<Rgba>, min_size: impl Into<Size>) -> Response {
+    FilledWidget::show((Filled::bg(bg), min_size.into()))
 }
