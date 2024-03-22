@@ -1,6 +1,6 @@
 use crate::{
     color::Color,
-    geom::{pos2, Align, Align2, Pos2, Vec2},
+    geom::{pos2, rect, Align, Align2, Pos2, Rect, Vec2},
 };
 
 use super::{shape::Shape, Attribute, Cell, Label};
@@ -112,26 +112,26 @@ impl<T: Label> Styled<T> {
             label: self.label.into_static(),
         }
     }
-}
 
-impl<T: Label> Shape for Styled<T> {
-    fn draw(&self, size: Vec2, mut put: impl FnMut(Pos2, Cell)) {
+    pub fn render(&self, rect: Rect, mut put: impl FnMut(Pos2, Cell)) {
+        let offset = rect.left_top();
+
         let item_size = self.label.size();
         let x = match self.align.x {
             Align::Min => 0,
-            Align::Center => (size.x / 2).saturating_sub(item_size.x / 2),
-            Align::Max => size.x.saturating_sub(item_size.x),
+            Align::Center => (rect.width() / 2).saturating_sub(item_size.x / 2),
+            Align::Max => rect.width().saturating_sub(item_size.x),
         };
 
         let y = match self.align.y {
             Align::Min => 0,
-            Align::Center => (size.y / 2).saturating_sub(item_size.y / 2),
-            Align::Max => size.y.saturating_sub(item_size.y),
+            Align::Center => (rect.width() / 2).saturating_sub(item_size.y / 2),
+            Align::Max => rect.width().saturating_sub(item_size.y),
         };
 
-        let mut start = pos2(x, y);
+        let mut start = pos2(x, y) + offset;
         for ch in self.label.chars() {
-            if start.x >= size.x || start.y >= size.y {
+            if start.x >= rect.width() || start.y >= rect.width() {
                 break;
             }
             if ch == '\n' {
@@ -142,5 +142,29 @@ impl<T: Label> Shape for Styled<T> {
             put(start, Cell::new(ch).fg(self.fg).bg(self.bg).attr(self.attr));
             start.x += 1;
         }
+    }
+}
+
+impl<T: Label> Shape for Styled<T> {
+    fn draw(&self, size: Vec2, put: impl FnMut(Pos2, Cell)) {
+        self.render(rect(size), put)
+    }
+}
+
+pub fn render(data: &str, rect: Rect, mut put: impl FnMut(Pos2, Cell)) {
+    let offset = rect.left_top();
+
+    let mut start = pos2(0, 0) + offset;
+    for ch in data.chars() {
+        if start.x >= rect.width() || start.y >= rect.width() {
+            break;
+        }
+        if ch == '\n' {
+            start.y += 1;
+            start.x = offset.x;
+            continue;
+        }
+        put(start, Cell::new(ch));
+        start.x += 1;
     }
 }

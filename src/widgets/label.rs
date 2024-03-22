@@ -9,6 +9,7 @@ use crate::{
 struct LabelWidget<T, F>
 where
     T: Label + 'static,
+    // TODO this garbage needs to go away
     F: Fn(Pos2, Cell) -> Cell + Copy + 'static,
 {
     props: Option<MappedStyle<T, F>>,
