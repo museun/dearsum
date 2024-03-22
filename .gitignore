@@ -1,4 +1,6 @@
 /target
 out.txt
+err.txt
 tree.txt
 Cargo.lock
+/.vscode
