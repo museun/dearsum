@@ -189,6 +189,7 @@ impl Inner {
             event, //
             &mut self.nodes.borrow_mut(),
             &mut self.computed.borrow_mut(),
+            &mut self.debug.borrow_mut(),
         );
 
         self.mouse_pos.set(self.input.borrow().mouse.pos);

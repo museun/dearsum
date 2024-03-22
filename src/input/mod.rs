@@ -72,12 +72,13 @@ impl Input {
         event: &CoreEvent,
         nodes: &mut SlotMap<WidgetId, Node>,
         layout: &mut SecondaryMap<WidgetId, LayoutNode>,
+        debug: &mut Vec<String>,
     ) -> Handled {
         self.last_event = Some(event.clone());
         match *event {
             CoreEvent::Mouse(event, pos, modifiers) => {
                 self.modifiers = modifiers;
-                self.mouse_event(event, pos, nodes, layout)
+                self.mouse_event(event, pos, nodes, layout, debug)
             }
             CoreEvent::Keyboard(key, modifiers) => {
                 self.modifiers = modifiers;
@@ -99,6 +100,7 @@ impl Input {
                         children: &node.children,
                         hovered: &self.mouse.mouse_over,
                         computed: layout,
+                        debug,
                     };
 
                     resp = node.widget.event(ctx, Event::KeyInput(event));
@@ -116,6 +118,7 @@ impl Input {
         pos: Pos2,
         nodes: &mut SlotMap<WidgetId, Node>,
         layout: &mut SecondaryMap<WidgetId, LayoutNode>,
+        debug: &mut Vec<String>,
     ) -> Handled {
         self.mouse.pos = pos;
 
@@ -126,6 +129,7 @@ impl Input {
                     layout,
                     mouse: &mut self.mouse,
                     intersections: &mut self.intersections,
+                    debug,
                 }
             };
         }
@@ -214,7 +218,9 @@ struct MouseContext<'a> {
     nodes: &'a mut SlotMap<WidgetId, Node>,
     layout: &'a mut SecondaryMap<WidgetId, LayoutNode>,
     mouse: &'a mut Mouse,
+
     intersections: &'a mut Intersections,
+    debug: &'a mut Vec<String>,
 }
 
 impl<'a> MouseContext<'a> {
@@ -232,6 +238,7 @@ impl<'a> MouseContext<'a> {
                     children: &node.children,
                     hovered: &self.mouse.mouse_over,
                     computed: self.layout,
+                    debug: self.debug,
                 };
                 node.widget.event(ctx, Event::MouseMove(event));
             }
@@ -258,6 +265,7 @@ impl<'a> MouseContext<'a> {
                     children: &node.children,
                     hovered: &self.mouse.mouse_over,
                     computed: self.layout,
+                    debug: self.debug,
                 };
 
                 let resp = node.widget.event(ctx, Event::MouseEnter(event));
@@ -297,6 +305,7 @@ impl<'a> MouseContext<'a> {
                     children: &node.children,
                     hovered: &self.mouse.mouse_over,
                     computed: self.layout,
+                    debug: self.debug,
                 };
                 node.widget.event(ctx, Event::MouseLeave(event));
                 inactive.push(hit)
@@ -333,6 +342,7 @@ impl<'a> MouseContext<'a> {
                 children: &node.children,
                 hovered: &self.mouse.mouse_over,
                 computed: self.layout,
+                debug: self.debug,
             };
 
             resp = node.widget.event(ctx, *event);
@@ -372,6 +382,7 @@ impl<'a> MouseContext<'a> {
                 children: &node.children,
                 hovered: &self.mouse.mouse_over,
                 computed: self.layout,
+                debug: self.debug,
             };
             resp = node.widget.event(ctx, *event);
             if resp.is_sink() {
